@@ -79,6 +79,21 @@ def plot_correlation_matrix(df: pd.DataFrame):
     plt.show()
 
 
+# ------------------ OUTLIER DETECTION ------------------------
+
+def find_outliers_iqr(series: pd.Series) -> tuple[pd.Series, float, float]:
+    """Identifica outliers usando IQR."""
+    q1 = series.quantile(0.25)
+    q3 = series.quantile(0.75)
+    iqr = q3 - q1
+
+    lower = q1 - 1.5 * iqr
+    upper = q3 + 1.5 * iqr
+
+    outliers = series[(series < lower) | (series > upper)]
+    return outliers, lower, upper
+
+
 # --------------------- NORMALIZATION -------------------------
 def fit_and_save_scaler(X: pd.DataFrame, save_path: str) -> StandardScaler:
     """
