@@ -1,0 +1,49 @@
+1. Visão Geral e Performance
+Após a execução do Grid Search com validação cruzada para otimização de hiperparâmetros, observou-se uma variação
+significativa de desempenho entre os algoritmos testados. O objetivo principal foi maximizar o F1-Score (Weighted),
+métrica escolhida por ser mais robusta em datasets desbalanceados (como é o caso de diagnósticos médicos, onde há
+muito mais casos "Normais" do que "Patológicos").
+
+O ranking de desempenho (baseado no F1-Score médio) ficou assim:
+
+Decision Tree (Árvore de Decisão): 93.4%  (Melhor Modelo)
+KNN (K-Nearest Neighbors): 90.7%
+MLP (Rede Neural): 89.1%
+Regressão Logística: 87.2%
+Naive Bayes: 83.0%
+
+2. Análise do Modelo Campeão: Decision Tree
+A Árvore de Decisão apresentou o melhor desempenho absoluto, com um F1-Score de 0.934.
+Configuração Ideal: O melhor resultado foi obtido utilizando o critério de Entropia, com profundidade máxima
+(max_depth) de 30 e min_samples_split de 20.
+Interpretação: O sucesso da Árvore sugere que as fronteiras de decisão entre fetos saudáveis e patológicos não são
+lineares, mas sim baseadas em regras de corte rígidas (ex: "se batimento < X e movimento > Y, então Z"). Árvores lidam
+muito bem com interações não-lineares entre variáveis. Além disso, o critério de Entropia (ganho de informação)
+mostrou-se ligeiramente superior ou igual ao Gini na separação das impurezas das classes.
+
+3. Desempenho dos Outros Modelos
+KNN (Vizinhos Próximos): Ocupou o segundo lugar com F1 de 0.907. A métrica de distância Manhattan com 7 vizinhos
+(n_neighbors=7) e peso pela distância (weights='distance') foi a melhor configuração. Isso indica que vizinhos muito
+próximos são determinantes para o diagnóstico, mas o modelo sofre um pouco mais com a "maldição da dimensionalidade"
+do que a Árvore.
+
+MLP (Redes Neurais): Com F1 de 0.891, a rede neural teve um desempenho sólido, mas inferior à Árvore. A função de
+ativação Tanh superou a ReLU neste cenário específico. O fato de uma rede neural (modelo complexo) perder para uma
+Árvore pode indicar que o dataset não possui dados suficientes para treinar a rede plenamente, ou que a estrutura
+tabular dos dados favorece modelos baseados em particionamento (como árvores).
+
+Regressão Logística e Naive Bayes: Ficaram nas últimas posições. A Regressão Logística (~87%) busca fronteiras
+lineares, o que prova que o problema não é linearmente separável. O Naive Bayes (~83%) teve o pior desempenho,
+provavelmente porque ele assume que as características (batimentos, movimentos, etc.) são independentes entre si,
+o que é falso na fisiologia fetal (ex: movimentos fetais alteram a frequência cardíaca).
+
+4. Conclusão e Impacto Clínico:
+No contexto de Saúde Fetal, o custo de um Falso Negativo (classificar um feto doente como saudável) é altíssimo.
+Portanto, modelos com maior Recall e F1 nas classes de risco são prioritários.
+
+A Decision Tree não só entregou a melhor métrica estatística, como também oferece interpretabilidade. Diferente da Rede
+ Neural (caixa preta), a Árvore permite que médicos visualizem exatamente quais regras levaram ao diagnóstico (ex:
+ "acelerações prolongadas abaixo de X").
+
+Recomendação Final: Recomenda-se a utilização do modelo de Decision Tree com critério de Entropia para este problema,
+devido à sua superioridade na detecção correta das classes e capacidade de explicar suas decisões.
