@@ -11,8 +11,6 @@ __pycache__/
 
 # Dados grandes ou sensíveis (não versionados)
 data/external/
-auxil/
-output/
 
 # Configurações de IDE (PyCharm/VSCode)
 .idea/
@@ -31,3 +29,38 @@ notebooks/*.ipynb_checkpoints*
 # 
 # Interpretador Python
 .venv
+
+# arquivos temporários do LaTeX
+*.aux
+*.bbl
+*.blg
+*.bcf
+*.brf
+*.lof
+*.log
+*.lot
+*.lol
+*.nav
+*.out
+*.pdfsync
+*.run.xml
+*.synctex.gz
+*.toc
+*.ttt
+*.fff
+*.fls
+*.fdb_latexmk
+*.xdv
+*.ps
+*.ilg
+*.ind
+*.idx
+*.upa
+*.upb
+
+# diretórios temporários criados pelo PyCharm / TeXiFy
+auxil/
+out/
+build/
+latex.out/
+latex.aux/
