@@ -89,5 +89,66 @@ com a presença de \textit{outliers} quando comparada ao Min-Max Scaling. O \tex
 é ajustado apenas nos dados de treino, dentro do procedimento de validação cruzada, para evitar \textit{data leakage}, e
 posteriormente é salvo para uso futuro na fase de modelagem e avaliação.
 
+\subsection{Modelos de Classificação}
+Nesta etapa do trabalho, descrevem-se os algoritmos de classificação selecionados para a primeira fase de modelagem: Árvore de Decisão, K-Vizinhos Mais Próximos (KNN), Gaussian Naive Bayes, Regressão Logística Multinomial e Multilayer Perceptron (MLP).
 
+\subsubsection{Árvore de Decisão (Decision Tree)}
+A Árvore de Decisão é um modelo que representa uma função que recebe como entrada uma lista de valores de atributos para uma única decisão \cite{russell2021artificial}. Ela começa da raiz seguindo o ramo até que uma folha seja alcançada. No presente trabalho, foi utilizado um algoritmo de predição chamado CART (\textit{Classification And Regression Tree}) implementado de forma padrão pela biblioteca \textit{Scikit-Learn}.
+
+Com o intuito de garantir o desempenho do modelo e evitar o \textit{overfitting}, houve uma variação dos seguintes hiperparâmetros durante a experimentação:
+
+\begin{itemize}
+    \item \textbf{Critério de Divisão:} O objetivo é verificar qual métrica consegue dividir melhor as classes de forma mais eficiente para o conjunto de dados. Para isso foi comparado o índice Gini com a Entropia.
+    \item \textbf{Profundidade Máxima:} Para impedir que o modelo apenas memorize ruídos do conjunto de treino foram testadas as profundidades (10, 20, 30) e a ausência de limite.
+    \item \textbf{Mínimo de Amostras para Divisão:} Variou-se a quantidade mínima de exemplos para a divisão de um nó interno (2, 10, 20). Os valores maiores tendem a forçar o modelo para criar regras mais gerais.
+\end{itemize}
+
+\noindent\textbf{Melhor Configuração:} Após a otimização via \textit{Grid Search}, a melhor combinação de hiperparâmetros obtida foi: critério \textbf{Entropia}, profundidade máxima \textbf{sem limite (None)} e mínimo de amostras para divisão igual a \textbf{20}.
+
+\subsubsection{K-Vizinhos Mais Próximos (KNN)}
+O algoritmo KNN consiste na predição de uma classe com base na votação majoritária de exemplos similares armazenados em um conjunto de treinamento. Ele utiliza seus $k$ vizinhos mais próximos com base em instâncias (\textit{lazy learning}).
+
+Com base nisso a escolha de hiperparâmetros se torna determinante. Foram investigadas as seguintes configurações:
+
+\begin{itemize}
+    \item \textbf{Número de Vizinhos:} Foram testados valores ímpares para que não houvesse empate na votação. Valores menores foram avaliados para capturar estruturas locais complexas, enquanto valores maiores visaram verificar o efeito da suavização nas fronteiras de decisão.
+    \item \textbf{Ponderação:} Avaliou-se o desempenho entre a votação uniforme e a ponderação pela distância, visto que esta atribui maior relevância aos vizinhos mais próximos em comparação com aqueles que estão no limite da fronteira $k$.
+    \item \textbf{Métrica de Distância:} Foram comparadas as distâncias Euclidiana e Manhattan para averiguar qual medida se adapta melhor à distribuição espacial dos atributos pré-processados.
+\end{itemize}
+
+\noindent\textbf{Melhor Configuração:} Dentre as combinações avaliadas, o modelo que apresentou melhor capacidade de generalização utilizou $k=\mathbf{7}$ vizinhos, ponderação \textbf{pela distância (distance)} e a métrica de distância \textbf{Manhattan}.
+
+\subsubsection{Gaussian Naive Bayes}
+O classificador Naive Bayes fundamenta-se na aplicação direta do Teorema de Bayes, assumindo a premissa de que as características (\textit{features}) são condicionalmente independentes entre si dado o valor da classe alvo. Embora essa suposição de ``ingenuidade'' raramente se sustente em dados biológicos complexos — onde correlações fisiológicas são esperadas —, o modelo é amplamente utilizado devido à sua eficiência computacional e robustez em altas dimensões.
+
+Dada a natureza contínua das variáveis do exame de CTG, adotou-se a variante Gaussian Naive Bayes, que assume que a verossimilhança das características segue uma distribuição normal (Gaussiana).
+
+\noindent\textbf{Parâmetros Utilizados:} O principal ajuste realizado foi no parâmetro de suavização da variância (\textit{var\_smoothing}). Este hiperparâmetro adiciona uma pequena constante à variância de cada característica para garantir a estabilidade numérica e evitar divisões por zero em probabilidades. Na busca em grade, variou-se este valor entre $10^{-9}$ e $10^{-6}$, permitindo ao modelo lidar melhor com irregularidades nas distribuições dos dados.
+
+\noindent\textbf{Melhor Configuração:} O valor ideal encontrado para o parâmetro de suavização da variância (\textit{var\_smoothing}) que maximizou o desempenho do modelo foi de $10^{-9}$.
+
+\subsubsection{Regressão Logística Multinomial}
+Diferente da regressão linear, a Regressão Logística modela a probabilidade de uma instância pertencer a uma classe específica utilizando a função logística (sigmoide). Para o cenário de saúde fetal, que possui três classes (Normal, Suspeito, Patológico), o algoritmo foi generalizado para o caso multinomial, utilizando a função Softmax para distribuir as probabilidades entre as categorias.
+
+A presença de multicolinearidade no \textit{dataset} (observada entre as variáveis de histograma) pode desestabilizar os coeficientes do modelo. Para mitigar isso, a regularização é indispensável.
+
+\begin{itemize}
+    \item \textbf{Tipo de Penalidade (penalty):} Foram comparadas a regularização L1 (Lasso), que promove a seleção de atributos ao zerar coeficientes de variáveis redundantes, e a L2 (Ridge), que penaliza pesos elevados para reduzir a variância do modelo sem eliminar variáveis.
+    \item \textbf{Inverso da Regularização (C):} Este parâmetro controla a intensidade da penalidade. Foram testados os valores 0.1, 1.0 e 10.0, onde valores menores indicam uma regularização mais forte (maior restrição aos coeficientes) para combater o \textit{overfitting}.
+\end{itemize}
+
+\noindent\textbf{Melhor Configuração:} O melhor ajuste do modelo utilizou o tipo de penalidade \textbf{L2 (Ridge)} combinada com o inverso da regularização $C=\mathbf{10.0}$.
+
+\subsubsection{Multilayer Perceptron (MLP)}
+As Redes Neurais Artificiais do tipo Multilayer Perceptron (MLP) são modelos inspirados no funcionamento biológico, compostos por camadas de neurônios interconectados que aprendem através do algoritmo de \textit{Backpropagation}. Sua principal vantagem reside na capacidade de modelar fronteiras de decisão não-lineares complexas, o que é ideal para capturar padrões sutis de sofrimento fetal que modelos lineares podem perder.
+
+O funcionamento do MLP depende criticamente de sua topologia e da forma como os neurônios processam os sinais de entrada.
+
+\begin{itemize}
+    \item \textbf{Arquitetura da Rede (hidden\_layer\_sizes):} Testou-se a profundidade da rede comparando uma estrutura mais rasa, com uma única camada oculta de 100 neurônios $(100,)$, contra uma estrutura mais profunda composta por duas camadas de 50 neurônios $(50, 50)$.
+    \item \textbf{Função de Ativação (activation):} Para introduzir a não-linearidade necessária para separar as classes de risco, alternou-se entre a função Tangente Hiperbólica (\textit{tanh}) e a Unidade Linear Retificada (\textit{relu}).
+    \item \textbf{Termo de Regularização L2 (alpha):} Para prevenir que a rede ``memorize'' o ruído dos dados de treino, aplicou-se uma penalidade nos pesos (\textit{alpha}) com valores de 0.0001, 0.001 e 0.01.
+\end{itemize}
+
+\noindent\textbf{Melhor Configuração:} A arquitetura neural mais eficiente para este problema foi composta por \textbf{uma camada oculta de 100 neurônios (100,)}, utilizando a função de ativação \textbf{tanh} (Tangente Hiperbólica) e termo de regularização alpha de $\mathbf{0.01}$.
 
