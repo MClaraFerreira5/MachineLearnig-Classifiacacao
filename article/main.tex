@@ -29,13 +29,28 @@
 
 \begin{document}
     \maketitle
-
     \begin{abstract}
-        Escrever o resummo em inglês
+    Cardiotocography (CTG) analysis is important for monitoring fetal well-being; however, its interpretation is
+    challenging and subjective. This paper presents a comparative study of five machine learning models---Decision Tree,
+    K-Nearest Neighbors (KNN), Naive Bayes, Logistic Regression, and Multilayer Perceptron (MLP)---for the automatic
+    classification of fetal health into three classes: Normal, Suspect, and Pathological. Using a dataset containing
+    2,126 CTG exam records, the models underwent normalization pre-processing and were optimized using Grid Search with
+    stratified 10-fold cross-validation. The results showed that the Decision Tree achieved the best overall performance,
+    reaching an F1-Score of 0.9340 and outperforming the other approaches. Thus, it is observed that rule-based models
+    offer high accuracy and interpretability, serving as promising tools for clinical decision support.
     \end{abstract}
 
+
     \begin{resumo}
-        Escrever um resumo aqui
+    A análise da Cardiotocografia (CTG) é importante para monitorar o bem-estar fetal, entretanto a sua interpretação é
+    desafiadora e subjetiva. Este trabalho apresenta um estudo comparativo de cinco modelos de aprendizado de máquina
+    --- Árvore de Decisão, K-Vizinhos Mais Próximos (KNN), Naive Bayes, Regressão Logística e Multilayer Perceptron (MLP)
+    --- para a classificação automática de saúde fetal em três classes: Normal, Suspeito e Patológico. Utilizando uma
+    base de dados com 2126 registros de exames CTG, os modelos foram submetidos a um pré-processamento de normalização
+    e otimizados utilizando o Grid Search com validação cruzada estratificada (10-fold). Os resultados mostraram que a
+    Árvore de Decisão obteve o melhor desempenho global, alcançando um F1-Score de 0.9340, superando as demais abordagens.
+    Com isso, observa-se que modelos baseados em regras oferecem alta precisão e interpretabilidade, sendo ferramentas
+    promissoras para o suporte à decisão clínica.
     \end{resumo}
 
     \input{sections/01-introducao}
