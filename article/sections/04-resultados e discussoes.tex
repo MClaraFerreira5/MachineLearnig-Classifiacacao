@@ -1,0 +1,30 @@
+\section{Resultados e Discussão}
+Para avaliar a eficácia dos modelos propostos na classificação da saúde fetal, foram realizados experimentos utilizando
+validação cruzada(\textit{k-fold cross-validation}), visando garantir a robustez estatística das métricas obtidas. Como
+discutido na metodologia, o conjunto de dados apresenta desbalanceamento de classes (predominância da classe ``Normal''),
+o que torna a Acurácia uma métrica insuficiente isoladamente. Portanto, a análise priorizou o F1-Score (\textit{Weighted})
+e o Recall, dado que a não identificação de um feto em estado patológico (Falso Negativo) acarreta riscos severos à vida.
+
+A Tabela abaixo resume o desempenho dos cinco classificadores otimizados via \textit{Grid Search}.
+
+\begin{table}[h!]
+\centering
+\caption{Desempenho dos classificadores otimizados via Grid Search.}
+\label{tab:resultados}
+\begin{tabular}{llccc}
+\hline
+\textbf{Modelo} & \textbf{Configuração Principal} & \textbf{Acurácia} & \textbf{F1-Score} & \textbf{Recall} \\ \hline
+Decision Tree & Entropy, Depth=30 & 93.42\% & 0.9340 & 0.9342 \\
+KNN & Manhattan, k=7 & 91.19\% & 0.9077 & 0.9119 \\
+MLP (Neural Net) & Tanh, (100,) & 89.53\% & 0.8911 & 0.8953 \\
+Regressão Logística & L2, C=10.0 & 88.11\% & 0.8724 & 0.8811 \\
+Naive Bayes & Var Smoothing=$10^{-9}$ & 81.35\% & 0.8299 & 0.8135 \\ \hline
+\end{tabular}
+\end{table}
+
+Observa-se que a Árvore de Decisão obteve o melhor desempenho global, alcançando um F1-Score de 0.934. Este resultado é consistente com a natureza dos dados de cardiotocografia (CTG), que frequentemente envolvem limites de decisão rígidos (ex: ``se batimento $< 110$ bpm, então risco''), favorecendo modelos baseados em regras de particionamento em detrimento de modelos lineares ou probabilísticos simples.
+
+O desempenho da Árvore de Decisão neste estudo alinha-se aos resultados do estado da arte mencionados nos trabalhos relacionados. Salini et al. \cite{salini2024} reportaram acurácia de 93\% utilizando \textit{Random Forest}, e Hoodbhoy et al. \cite{hoodbhoy2019} obtiveram desempenho similar com XGBoost. O fato de uma única Árvore de Decisão (com poda otimizada) atingir resultados competitivos com métodos de \textit{Ensemble} mais complexos sugere que as \textit{features} extraídas do exame CTG possuem alto poder discriminativo quando modeladas de forma não-linear.
+
+Em contrapartida, modelos lineares como a Regressão Logística (88.1\%) e probabilísticos como Naive Bayes (81.3\%) apresentaram desempenho inferior. A baixa performance do Naive Bayes pode ser explicada pela forte correlação identificada entre as variáveis de histograma na análise exploratória, violando a premissa de independência entre as variáveis preditoras exigida pelo algoritmo.
+
