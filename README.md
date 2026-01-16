@@ -59,7 +59,7 @@ MachineLearning-Classificacao/
 │
 ├── README.md               # Documentação do projeto
 └── requirements.txt        # Lista de dependências
-
+````
 ## 👥 Autores
 
 Trabalho desenvolvido pelos discentes:
@@ -70,4 +70,5 @@ Trabalho desenvolvido pelos discentes:
 * Yann Keven
 
 ---
-*UFRPE - UABJ | Dezembro de 2024*
+*UFRPE - UABJ | Dezembro de 2025*
+
